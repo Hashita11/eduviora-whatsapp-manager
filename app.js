@@ -759,25 +759,18 @@ Lakshmi,9000012345,School`;
 function addTemplate() {
 
     const title =
-        document.getElementById("templateTitle")
-        .value.trim();
+        document.getElementById("templateTitle").value.trim();
 
+    const category =
+        document.getElementById("templateCategory").value;
 
     const message =
-        document.getElementById("templateMessage")
-        .value.trim();
-
+        document.getElementById("templateMessage").value.trim();
 
     if (!title || !message) {
-
-        alert(
-            "Please enter template name and message."
-        );
-
+        alert("Please enter template name and message.");
         return;
-
     }
-
 
     templates.push({
 
@@ -785,25 +778,26 @@ function addTemplate() {
 
         title: title,
 
+        category: category,
+
         message: message
 
     });
-
 
     localStorage.setItem(
         "eduviora_templates",
         JSON.stringify(templates)
     );
 
-
     document.getElementById("templateTitle").value = "";
 
     document.getElementById("templateMessage").value = "";
 
-
     displayTemplates();
 
     updateDashboard();
+
+    alert("Template saved successfully.");
 
 }
 
@@ -905,63 +899,59 @@ function deleteTemplate(id) {
 // ==========================================
 // CAMPAIGNS
 // ==========================================
-
-function displayCampaigns() {
+function displayTemplates() {
 
     const list =
-        document.getElementById("campaignList");
-
+        document.getElementById("templateList");
 
     list.innerHTML = "";
 
-
-    if (contacts.length === 0) {
+    if (templates.length === 0) {
 
         list.innerHTML =
-            "<p>Add contacts first.</p>";
+            "<p>No templates created yet.</p>";
 
         return;
 
     }
 
-
-    contacts.forEach(contact => {
+    templates.forEach(template => {
 
         const div =
             document.createElement("div");
 
-
-        div.className =
-            "campaign";
-
+        div.className = "template";
 
         div.innerHTML = `
 
-            <strong>
-                ${escapeHTML(contact.name)}
-            </strong>
+            <h3>
+                ${escapeHTML(template.title)}
+            </h3>
+
+            <small>
+                Category:
+                ${escapeHTML(template.category || "General")}
+            </small>
+
+            <div class="template-message">
+                ${escapeHTML(template.message)}
+            </div>
 
             <br>
 
-            ${escapeHTML(contact.phone)}
-
-            <br><br>
-
             <button
-                onclick="prepareMessage(${contact.id})"
+                onclick="deleteTemplate(${template.id})"
             >
-                Prepare WhatsApp Message
+                Delete
             </button>
 
         `;
-
 
         list.appendChild(div);
 
     });
 
 }
-
 
 // ==========================================
 // PREPARE MESSAGE
