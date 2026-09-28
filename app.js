@@ -899,50 +899,65 @@ function deleteTemplate(id) {
 // ==========================================
 // CAMPAIGNS
 // ==========================================
-function displayTemplates() {
+function displayCampaigns() {
 
-    const list =
-        document.getElementById("templateList");
+    const list = document.getElementById("campaignList");
+
+    if (!list) return;
 
     list.innerHTML = "";
 
-    if (templates.length === 0) {
-
-        list.innerHTML =
-            "<p>No templates created yet.</p>";
-
+    if (contacts.length === 0) {
+        list.innerHTML = "<p>No contacts available.</p>";
         return;
-
     }
 
-    templates.forEach(template => {
+    contacts.forEach(contact => {
 
-        const div =
-            document.createElement("div");
+        let templateOptions = "";
 
-        div.className = "template";
+        if (templates.length === 0) {
+
+            templateOptions =
+                `<option value="">No templates available</option>`;
+
+        } else {
+
+            templateOptions =
+                `<option value="">Select Template</option>`;
+
+            templates.forEach(template => {
+
+                templateOptions += `
+                    <option value="${template.id}">
+                        ${escapeHTML(template.title)}
+                    </option>
+                `;
+
+            });
+
+        }
+
+        const div = document.createElement("div");
+
+        div.className = "campaign";
 
         div.innerHTML = `
 
-            <h3>
-                ${escapeHTML(template.title)}
-            </h3>
+            <h3>${escapeHTML(contact.name)}</h3>
 
-            <small>
-                Category:
-                ${escapeHTML(template.category || "General")}
-            </small>
+            <p>
+                📱 ${escapeHTML(contact.phone)}
+            </p>
 
-            <div class="template-message">
-                ${escapeHTML(template.message)}
-            </div>
+            <select id="template-${contact.id}">
+                ${templateOptions}
+            </select>
 
-            <br>
+            <br><br>
 
-            <button
-                onclick="deleteTemplate(${template.id})"
-            >
-                Delete
+            <button onclick="prepareTemplateMessage(${contact.id})">
+                📲 Prepare WhatsApp Message
             </button>
 
         `;
@@ -953,6 +968,59 @@ function displayTemplates() {
 
 }
 
+function prepareTemplateMessage(contactId) {
+
+    const contact =
+        contacts.find(c => c.id === contactId);
+
+    if (!contact) {
+        alert("Contact not found.");
+        return;
+    }
+
+    const select =
+        document.getElementById("template-" + contactId);
+
+    const templateId =
+        select.value;
+
+    if (!templateId) {
+        alert("Please select a template.");
+        return;
+    }
+
+    const template =
+        templates.find(t => t.id == templateId);
+
+    if (!template) {
+        alert("Template not found.");
+        return;
+    }
+
+    let message = template.message;
+
+    message = message.replaceAll(
+        "{{name}}",
+        contact.name
+    );
+
+    message = message.replaceAll(
+        "{{phone}}",
+        contact.phone
+    );
+
+    message = message.replaceAll(
+        "{{category}}",
+        contact.category || ""
+    );
+
+    openWhatsApp(
+        contact.phone,
+        contact.name,
+        message
+    );
+
+}
 // ==========================================
 // PREPARE MESSAGE
 // ==========================================
