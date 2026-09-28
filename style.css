@@ -222,3 +222,22 @@ footer {
     }
 
 }
+/* STEP 2 */
+
+.help-text {
+    color: #555;
+    font-size: 14px;
+}
+
+#importResult {
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.import-success {
+    background: #e8f7ed;
+    border: 1px solid #43a047;
+    color: #176b2c;
+    padding: 15px;
+    border-radius: 10px;
+}
