@@ -12,15 +12,20 @@
 <body>
 
 <header class="topbar">
+
     <div>
         <h1>EDUVIORA</h1>
         <p>WhatsApp Marketing Manager</p>
     </div>
+
 </header>
+
 
 <div class="container">
 
+
     <!-- DASHBOARD -->
+
     <section id="dashboard">
 
         <h2>Dashboard</h2>
@@ -47,7 +52,7 @@
     </section>
 
 
-    <!-- NAVIGATION -->
+    <!-- MENU -->
 
     <div class="menu">
 
@@ -71,6 +76,9 @@
     <section id="contacts" class="section">
 
         <h2>Customer Contacts</h2>
+
+
+        <!-- ADD CONTACT -->
 
         <div class="form">
 
@@ -98,15 +106,58 @@
 
         </div>
 
-        <br>
+
+        <hr>
+
+
+        <!-- CSV IMPORT -->
+
+        <h3>📂 Import Contacts from CSV</h3>
+
+        <p class="help-text">
+            CSV columns:
+            <strong>Name, Phone, Category</strong>
+        </p>
+
+        <input
+            type="file"
+            id="csvFile"
+            accept=".csv"
+        >
+
+        <br><br>
+
+        <button onclick="importCSV()">
+            📥 Import CSV
+        </button>
+
+        <button onclick="downloadSampleCSV()">
+            📄 Download Sample CSV
+        </button>
+
+
+        <br><br>
+
+        <div id="importResult"></div>
+
+
+        <hr>
+
+
+        <!-- SEARCH -->
+
+        <h3>🔎 Search Contacts</h3>
 
         <input
             type="text"
             id="searchContact"
-            placeholder="Search customer..."
+            placeholder="Search name, mobile or category..."
             onkeyup="displayContacts()"
             class="search"
         >
+
+
+        <!-- CONTACT LIST -->
 
         <div id="contactList"></div>
 
@@ -157,15 +208,22 @@
 
 
 <footer>
+
     <strong>EDUVIORA</strong>
+
     <br>
+
     One Platform. Every Business.
+
     <br>
+
     www.eduviora.in
+
 </footer>
 
 
 <script src="app.js"></script>
 
 </body>
+
 </html>
