@@ -908,35 +908,30 @@ function displayCampaigns() {
     list.innerHTML = "";
 
     if (contacts.length === 0) {
-        list.innerHTML = "<p>No contacts available.</p>";
+        list.innerHTML = `
+            <div class="campaign">
+                <p>📭 No contacts available.</p>
+                <p>Please add or import contacts first.</p>
+            </div>
+        `;
         return;
     }
 
     contacts.forEach(contact => {
 
-        let templateOptions = "";
+        let options = `
+            <option value="">Select Template</option>
+        `;
 
-        if (templates.length === 0) {
+        templates.forEach(template => {
 
-            templateOptions =
-                `<option value="">No templates available</option>`;
+            options += `
+                <option value="${template.id}">
+                    ${escapeHTML(template.title)}
+                </option>
+            `;
 
-        } else {
-
-            templateOptions =
-                `<option value="">Select Template</option>`;
-
-            templates.forEach(template => {
-
-                templateOptions += `
-                    <option value="${template.id}">
-                        ${escapeHTML(template.title)}
-                    </option>
-                `;
-
-            });
-
-        }
+        });
 
         const div = document.createElement("div");
 
@@ -944,14 +939,12 @@ function displayCampaigns() {
 
         div.innerHTML = `
 
-            <h3>${escapeHTML(contact.name)}</h3>
+            <h3>👤 ${escapeHTML(contact.name)}</h3>
 
-            <p>
-                📱 ${escapeHTML(contact.phone)}
-            </p>
+            <p>📱 ${escapeHTML(contact.phone)}</p>
 
             <select id="template-${contact.id}">
-                ${templateOptions}
+                ${options}
             </select>
 
             <br><br>
@@ -970,30 +963,26 @@ function displayCampaigns() {
 
 function prepareTemplateMessage(contactId) {
 
-    const contact =
-        contacts.find(c => c.id === contactId);
+    const contact = contacts.find(c => c.id == contactId);
 
     if (!contact) {
-        alert("Contact not found.");
+        alert("Contact not found");
         return;
     }
 
     const select =
         document.getElementById("template-" + contactId);
 
-    const templateId =
-        select.value;
-
-    if (!templateId) {
-        alert("Please select a template.");
+    if (!select || !select.value) {
+        alert("Please select a template");
         return;
     }
 
     const template =
-        templates.find(t => t.id == templateId);
+        templates.find(t => t.id == select.value);
 
     if (!template) {
-        alert("Template not found.");
+        alert("Template not found");
         return;
     }
 
@@ -1019,7 +1008,6 @@ function prepareTemplateMessage(contactId) {
         contact.name,
         message
     );
-
 }
 // ==========================================
 // PREPARE MESSAGE
