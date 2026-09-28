@@ -1,10 +1,12 @@
-// ================================
-// EDUVIORA WHATSAPP MANAGER
-// STEP 1
-// ================================
+// ==========================================
+// EDUVIORA WHATSAPP MARKETING MANAGER
+// STEP 2 - CSV CONTACT IMPORT
+// ==========================================
 
 
-// DATA
+// ==========================================
+// LOAD DATA
+// ==========================================
 
 let contacts =
     JSON.parse(localStorage.getItem("eduviora_contacts")) || [];
@@ -16,15 +18,18 @@ let preparedMessages =
     JSON.parse(localStorage.getItem("eduviora_messages")) || [];
 
 
-// ================================
+// ==========================================
 // START
-// ================================
+// ==========================================
 
 document.addEventListener("DOMContentLoaded", function () {
 
     displayContacts();
+
     displayTemplates();
+
     displayCampaigns();
+
     updateDashboard();
 
     showSection("contacts");
@@ -32,48 +37,97 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-// ================================
+// ==========================================
 // SECTION NAVIGATION
-// ================================
+// ==========================================
 
 function showSection(sectionName) {
 
     document.querySelectorAll(".section")
         .forEach(section => {
+
             section.classList.remove("active");
+
         });
+
 
     const section =
         document.getElementById(sectionName);
 
+
     if (section) {
+
         section.classList.add("active");
+
     }
 
 }
 
 
-// ================================
-// ADD CONTACT
-// ================================
+// ==========================================
+// ADD SINGLE CONTACT
+// ==========================================
 
 function addContact() {
 
     const name =
-        document.getElementById("contactName").value.trim();
+        document.getElementById("contactName")
+        .value.trim();
+
 
     const phone =
-        document.getElementById("contactPhone").value.trim();
+        document.getElementById("contactPhone")
+        .value.trim();
+
 
     const category =
-        document.getElementById("contactCategory").value.trim();
+        document.getElementById("contactCategory")
+        .value.trim();
 
 
     if (!name || !phone) {
 
-        alert("Please enter customer name and mobile number.");
+        alert(
+            "Please enter customer name and mobile number."
+        );
 
         return;
+
+    }
+
+
+    const cleanPhone =
+        cleanMobile(phone);
+
+
+    if (!cleanPhone) {
+
+        alert(
+            "Please enter a valid mobile number."
+        );
+
+        return;
+
+    }
+
+
+    // DUPLICATE CHECK
+
+    const exists =
+        contacts.some(
+            contact =>
+                cleanMobile(contact.phone) === cleanPhone
+        );
+
+
+    if (exists) {
+
+        alert(
+            "This mobile number already exists."
+        );
+
+        return;
+
     }
 
 
@@ -83,9 +137,10 @@ function addContact() {
 
         name: name,
 
-        phone: phone,
+        phone: cleanPhone,
 
-        category: category || "Customer"
+        category:
+            category || "Customer"
 
     };
 
@@ -93,10 +148,7 @@ function addContact() {
     contacts.push(contact);
 
 
-    localStorage.setItem(
-        "eduviora_contacts",
-        JSON.stringify(contacts)
-    );
+    saveContacts();
 
 
     document.getElementById("contactName").value = "";
@@ -112,22 +164,75 @@ function addContact() {
 
     updateDashboard();
 
+
+    alert("Contact added successfully.");
+
 }
 
 
-// ================================
+// ==========================================
+// CLEAN MOBILE NUMBER
+// ==========================================
+
+function cleanMobile(phone) {
+
+    let number =
+        String(phone)
+        .replace(/\D/g, "");
+
+
+    // +91XXXXXXXXXX
+
+    if (number.startsWith("91") && number.length === 12) {
+
+        number = number.substring(2);
+
+    }
+
+
+    // 10 digit Indian number
+
+    if (number.length === 10) {
+
+        return number;
+
+    }
+
+
+    return "";
+
+}
+
+
+// ==========================================
+// SAVE CONTACTS
+// ==========================================
+
+function saveContacts() {
+
+    localStorage.setItem(
+        "eduviora_contacts",
+        JSON.stringify(contacts)
+    );
+
+}
+
+
+// ==========================================
 // DISPLAY CONTACTS
-// ================================
+// ==========================================
 
 function displayContacts() {
 
     const list =
         document.getElementById("contactList");
 
+
     const search =
         document.getElementById("searchContact")
         ?.value
-        .toLowerCase() || "";
+        .toLowerCase()
+        .trim() || "";
 
 
     list.innerHTML = "";
@@ -136,11 +241,20 @@ function displayContacts() {
     const filtered =
         contacts.filter(contact =>
 
-            contact.name.toLowerCase().includes(search) ||
+            contact.name
+                .toLowerCase()
+                .includes(search)
 
-            contact.phone.includes(search) ||
+            ||
 
-            contact.category.toLowerCase().includes(search)
+            contact.phone
+                .includes(search)
+
+            ||
+
+            contact.category
+                .toLowerCase()
+                .includes(search)
 
         );
 
@@ -151,6 +265,7 @@ function displayContacts() {
             "<p>No contacts found.</p>";
 
         return;
+
     }
 
 
@@ -159,7 +274,9 @@ function displayContacts() {
         const div =
             document.createElement("div");
 
-        div.className = "contact";
+
+        div.className =
+            "contact";
 
 
         div.innerHTML = `
@@ -182,10 +299,14 @@ function displayContacts() {
             <div>
 
                 <button
-                    onclick="openWhatsApp('${contact.phone}', '${contact.name}')"
+                    onclick="openWhatsApp(
+                        '${contact.phone}',
+                        '${escapeHTML(contact.name)}'
+                    )"
                 >
                     WhatsApp
                 </button>
+
 
                 <button
                     onclick="deleteContact(${contact.id})"
@@ -205,25 +326,26 @@ function displayContacts() {
 }
 
 
-// ================================
+// ==========================================
 // DELETE CONTACT
-// ================================
+// ==========================================
 
 function deleteContact(id) {
 
     if (!confirm("Delete this contact?")) {
+
         return;
+
     }
 
 
     contacts =
-        contacts.filter(contact => contact.id !== id);
+        contacts.filter(
+            contact => contact.id !== id
+        );
 
 
-    localStorage.setItem(
-        "eduviora_contacts",
-        JSON.stringify(contacts)
-    );
+    saveContacts();
 
 
     displayContacts();
@@ -235,9 +357,404 @@ function deleteContact(id) {
 }
 
 
-// ================================
-// ADD TEMPLATE
-// ================================
+// ==========================================
+// CSV IMPORT
+// ==========================================
+
+function importCSV() {
+
+    const fileInput =
+        document.getElementById("csvFile");
+
+
+    const result =
+        document.getElementById("importResult");
+
+
+    if (!fileInput.files.length) {
+
+        alert(
+            "Please select a CSV file first."
+        );
+
+        return;
+
+    }
+
+
+    const file =
+        fileInput.files[0];
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload =
+        function(event) {
+
+            const text =
+                event.target.result;
+
+
+            processCSV(text);
+
+        };
+
+
+    reader.readAsText(file);
+
+}
+
+
+// ==========================================
+// PROCESS CSV
+// ==========================================
+
+function processCSV(text) {
+
+    const result =
+        document.getElementById("importResult");
+
+
+    const lines =
+        text
+        .split(/\r?\n/)
+        .filter(line => line.trim() !== "");
+
+
+    if (lines.length < 2) {
+
+        result.innerHTML =
+            "❌ CSV file has no contact data.";
+
+        return;
+
+    }
+
+
+    // HEADER
+
+    const header =
+        parseCSVLine(lines[0])
+        .map(item =>
+            item.trim().toLowerCase()
+        );
+
+
+    const nameIndex =
+        findColumn(
+            header,
+            ["name", "customer", "customer name"]
+        );
+
+
+    const phoneIndex =
+        findColumn(
+            header,
+            ["phone", "mobile", "mobile number", "number"]
+        );
+
+
+    const categoryIndex =
+        findColumn(
+            header,
+            ["category", "type", "customer type"]
+        );
+
+
+    if (
+        nameIndex === -1 ||
+        phoneIndex === -1
+    ) {
+
+        result.innerHTML = `
+            ❌ Required columns missing.
+            <br><br>
+            Your CSV must contain:
+            <strong>Name</strong> and
+            <strong>Phone</strong>.
+        `;
+
+        return;
+
+    }
+
+
+    let added = 0;
+
+    let skipped = 0;
+
+
+    for (
+        let i = 1;
+        i < lines.length;
+        i++
+    ) {
+
+        const row =
+            parseCSVLine(lines[i]);
+
+
+        const name =
+            (row[nameIndex] || "")
+            .trim();
+
+
+        const phone =
+            (row[phoneIndex] || "")
+            .trim();
+
+
+        const category =
+            categoryIndex !== -1
+                ? (row[categoryIndex] || "").trim()
+                : "Customer";
+
+
+        if (!name || !phone) {
+
+            skipped++;
+
+            continue;
+
+        }
+
+
+        const cleanPhoneNumber =
+            cleanMobile(phone);
+
+
+        if (!cleanPhoneNumber) {
+
+            skipped++;
+
+            continue;
+
+        }
+
+
+        // DUPLICATE CHECK
+
+        const exists =
+            contacts.some(
+                contact =>
+                    cleanMobile(contact.phone)
+                    === cleanPhoneNumber
+            );
+
+
+        if (exists) {
+
+            skipped++;
+
+            continue;
+
+        }
+
+
+        contacts.push({
+
+            id: Date.now() + i,
+
+            name: name,
+
+            phone: cleanPhoneNumber,
+
+            category:
+                category || "Customer"
+
+        });
+
+
+        added++;
+
+    }
+
+
+    saveContacts();
+
+
+    displayContacts();
+
+    displayCampaigns();
+
+    updateDashboard();
+
+
+    result.innerHTML = `
+
+        <div class="import-success">
+
+            ✅ Import completed.
+
+            <br><br>
+
+            <strong>${added}</strong>
+            contacts added.
+
+            <br>
+
+            <strong>${skipped}</strong>
+            contacts skipped.
+
+        </div>
+
+    `;
+
+
+    fileInput.value = "";
+
+}
+
+
+// ==========================================
+// FIND CSV COLUMN
+// ==========================================
+
+function findColumn(
+    headers,
+    possibleNames
+) {
+
+    for (
+        let i = 0;
+        i < headers.length;
+        i++
+    ) {
+
+        if (
+            possibleNames.includes(
+                headers[i]
+            )
+        ) {
+
+            return i;
+
+        }
+
+    }
+
+
+    return -1;
+
+}
+
+
+// ==========================================
+// CSV LINE PARSER
+// ==========================================
+
+function parseCSVLine(line) {
+
+    const result = [];
+
+    let current = "";
+
+    let insideQuotes = false;
+
+
+    for (
+        let i = 0;
+        i < line.length;
+        i++
+    ) {
+
+        const char =
+            line[i];
+
+
+        if (char === '"') {
+
+            insideQuotes =
+                !insideQuotes;
+
+        }
+
+        else if (
+            char === "," &&
+            !insideQuotes
+        ) {
+
+            result.push(
+                current.trim()
+            );
+
+            current = "";
+
+        }
+
+        else {
+
+            current += char;
+
+        }
+
+    }
+
+
+    result.push(
+        current.trim()
+    );
+
+
+    return result.map(
+        value =>
+            value.replace(/^"|"$/g, "")
+    );
+
+}
+
+
+// ==========================================
+// DOWNLOAD SAMPLE CSV
+// ==========================================
+
+function downloadSampleCSV() {
+
+    const csv =
+
+`Name,Phone,Category
+Ramesh,9876543210,Customer
+Suresh,9123456789,Shop
+Anil,9988776655,Business
+Lakshmi,9000012345,School`;
+
+
+    const blob =
+        new Blob(
+            [csv],
+            {
+                type: "text/csv"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(blob);
+
+
+    const link =
+        document.createElement("a");
+
+
+    link.href = url;
+
+    link.download =
+        "eduviora-contacts-sample.csv";
+
+
+    link.click();
+
+
+    URL.revokeObjectURL(url);
+
+}
+
+
+// ==========================================
+// TEMPLATES
+// ==========================================
 
 function addTemplate() {
 
@@ -253,13 +770,16 @@ function addTemplate() {
 
     if (!title || !message) {
 
-        alert("Please enter template name and message.");
+        alert(
+            "Please enter template name and message."
+        );
 
         return;
+
     }
 
 
-    const template = {
+    templates.push({
 
         id: Date.now(),
 
@@ -267,10 +787,7 @@ function addTemplate() {
 
         message: message
 
-    };
-
-
-    templates.push(template);
+    });
 
 
     localStorage.setItem(
@@ -291,9 +808,9 @@ function addTemplate() {
 }
 
 
-// ================================
+// ==========================================
 // DISPLAY TEMPLATES
-// ================================
+// ==========================================
 
 function displayTemplates() {
 
@@ -310,6 +827,7 @@ function displayTemplates() {
             "<p>No templates created yet.</p>";
 
         return;
+
     }
 
 
@@ -318,7 +836,9 @@ function displayTemplates() {
         const div =
             document.createElement("div");
 
-        div.className = "template";
+
+        div.className =
+            "template";
 
 
         div.innerHTML = `
@@ -349,19 +869,24 @@ function displayTemplates() {
 }
 
 
-// ================================
+// ==========================================
 // DELETE TEMPLATE
-// ================================
+// ==========================================
 
 function deleteTemplate(id) {
 
     if (!confirm("Delete this template?")) {
+
         return;
+
     }
 
 
     templates =
-        templates.filter(template => template.id !== id);
+        templates.filter(
+            template =>
+                template.id !== id
+        );
 
 
     localStorage.setItem(
@@ -377,9 +902,9 @@ function deleteTemplate(id) {
 }
 
 
-// ================================
+// ==========================================
 // CAMPAIGNS
-// ================================
+// ==========================================
 
 function displayCampaigns() {
 
@@ -396,6 +921,7 @@ function displayCampaigns() {
             "<p>Add contacts first.</p>";
 
         return;
+
     }
 
 
@@ -404,7 +930,9 @@ function displayCampaigns() {
         const div =
             document.createElement("div");
 
-        div.className = "campaign";
+
+        div.className =
+            "campaign";
 
 
         div.innerHTML = `
@@ -435,35 +963,43 @@ function displayCampaigns() {
 }
 
 
-// ================================
+// ==========================================
 // PREPARE MESSAGE
-// ================================
+// ==========================================
 
 function prepareMessage(contactId) {
 
     const contact =
-        contacts.find(c => c.id === contactId);
+        contacts.find(
+            c => c.id === contactId
+        );
 
 
     if (!contact) {
+
         return;
+
     }
 
 
     let message =
-        "Hello " + contact.name + ",\n\n";
 
-    message +=
-        "EDUVIORA - One Platform. Every Business.\n\n";
+`నమస్కారం ${contact.name} గారు,
 
-    message +=
-        "We provide Business Websites, CRM, Billing, ERP and Digital Solutions.\n\n";
+EDUVIORA మీ వ్యాపారానికి సంపూర్ణ Digital Solutions అందిస్తోంది.
 
-    message +=
-        "Contact us for more information.\n\n";
+🌐 Business Website
+📊 CRM
+🧾 Billing
+🏫 ERP
+📱 WhatsApp Solutions
 
-    message +=
-        "www.eduviora.in";
+మీ వ్యాపారాన్ని Digital‌గా మార్చుకోవడానికి మమ్మల్ని సంప్రదించండి.
+
+📞 9492770766
+📞 9059988802
+
+🌐 www.eduviora.in`;
 
 
     preparedMessages.push({
@@ -495,22 +1031,27 @@ function prepareMessage(contactId) {
 }
 
 
-// ================================
+// ==========================================
 // OPEN WHATSAPP
-// ================================
+// ==========================================
 
-function openWhatsApp(phone, name, message) {
+function openWhatsApp(
+    phone,
+    name,
+    message
+) {
 
     let cleanPhone =
-        phone.replace(/\D/g, "");
+        cleanMobile(phone);
 
 
-    // India number handling
+    if (!cleanPhone) {
 
-    if (cleanPhone.length === 10) {
+        alert(
+            "Invalid mobile number."
+        );
 
-        cleanPhone =
-            "91" + cleanPhone;
+        return;
 
     }
 
@@ -518,71 +1059,97 @@ function openWhatsApp(phone, name, message) {
     if (!message) {
 
         message =
-            "Hello " + name + ",\n\n";
 
-        message +=
-            "This is EDUVIORA.\n\n";
+`నమస్కారం ${name} గారు,
 
-        message +=
-            "We provide complete digital solutions for businesses.\n\n";
+EDUVIORA మీ వ్యాపారానికి సంపూర్ణ Digital Solutions అందిస్తోంది.
 
-        message +=
-            "Website | CRM | Billing | ERP\n\n";
+Website | CRM | Billing | ERP
 
-        message +=
-            "www.eduviora.in";
+📞 9492770766
+📞 9059988802
+
+🌐 www.eduviora.in`;
 
     }
 
 
     const url =
-        "https://wa.me/" +
+
+        "https://wa.me/91" +
+
         cleanPhone +
+
         "?text=" +
+
         encodeURIComponent(message);
 
 
-    window.open(url, "_blank");
+    window.open(
+        url,
+        "_blank"
+    );
 
 }
 
 
-// ================================
+// ==========================================
 // DASHBOARD
-// ================================
+// ==========================================
 
 function updateDashboard() {
 
-    document.getElementById("totalContacts")
-        .innerText = contacts.length;
+    document.getElementById(
+        "totalContacts"
+    ).innerText =
+        contacts.length;
 
 
-    document.getElementById("totalTemplates")
-        .innerText = templates.length;
+    document.getElementById(
+        "totalTemplates"
+    ).innerText =
+        templates.length;
 
 
-    document.getElementById("totalMessages")
-        .innerText = preparedMessages.length;
+    document.getElementById(
+        "totalMessages"
+    ).innerText =
+        preparedMessages.length;
 
 }
 
 
-// ================================
-// SECURITY
-// ================================
+// ==========================================
+// HTML SECURITY
+// ==========================================
 
 function escapeHTML(value) {
 
     return String(value)
 
-        .replace(/&/g, "&amp;")
+        .replace(
+            /&/g,
+            "&amp;"
+        )
 
-        .replace(/</g, "&lt;")
+        .replace(
+            /</g,
+            "&lt;"
+        )
 
-        .replace(/>/g, "&gt;")
+        .replace(
+            />/g,
+            "&gt;"
+        )
 
-        .replace(/"/g, "&quot;")
+        .replace(
+            /"/g,
+            "&quot;"
+        )
 
-        .replace(/'/g, "&#039;");
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 
 }
