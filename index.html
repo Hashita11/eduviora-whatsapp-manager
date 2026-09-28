@@ -168,26 +168,36 @@
 
     <section id="templates" class="section">
 
-        <h2>Message Templates</h2>
+    <h2>📝 Smart Message Templates</h2>
 
-        <input
-            type="text"
-            id="templateTitle"
-            placeholder="Template Name"
-        >
+    <input
+        type="text"
+        id="templateTitle"
+        placeholder="Template Name"
+    >
 
-        <textarea
-            id="templateMessage"
-            placeholder="Type your message here..."
-        ></textarea>
+    <select id="templateCategory">
+        <option value="General">General</option>
+        <option value="Shop">Shop</option>
+        <option value="Business">Business</option>
+        <option value="School">School</option>
+        <option value="College">College</option>
+        <option value="Office">Office</option>
+        <option value="Professional">Professional</option>
+    </select>
 
-        <button onclick="addTemplate()">
-            + Save Template
-        </button>
+    <textarea
+        id="templateMessage"
+        placeholder="Type your message here... Use {{name}} for customer name."
+    ></textarea>
 
-        <div id="templateList"></div>
+    <button onclick="addTemplate()">
+        + Save Template
+    </button>
 
-    </section>
+    <div id="templateList"></div>
+
+</section>
 
 
     <!-- CAMPAIGNS -->
