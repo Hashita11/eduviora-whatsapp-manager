@@ -1002,6 +1002,28 @@ function prepareTemplateMessage(contactId) {
         "{{category}}",
         contact.category || ""
     );
+    preparedMessages.push({
+
+    id: Date.now(),
+
+    contactName: contact.name,
+
+    phone: contact.phone,
+
+    template: template.title,
+
+    message: message,
+
+    date: new Date().toLocaleString()
+
+});
+
+localStorage.setItem(
+    "eduviora_messages",
+    JSON.stringify(preparedMessages)
+);
+
+updateDashboard();
 
     openWhatsApp(
         contact.phone,
