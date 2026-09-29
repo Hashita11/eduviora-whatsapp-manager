@@ -228,36 +228,49 @@ function displayContacts() {
     const list =
         document.getElementById("contactList");
 
-
     const search =
         document.getElementById("searchContact")
         ?.value
         .toLowerCase()
         .trim() || "";
 
+    const categoryElement =
+        document.getElementById("categoryFilter");
+
+    const selectedCategory =
+        categoryElement
+        ? categoryElement.value
+        : "All";
 
     list.innerHTML = "";
 
-
     const filtered =
-        contacts.filter(contact =>
+        contacts.filter(contact => {
 
-            contact.name
-                .toLowerCase()
-                .includes(search)
+            const name =
+                (contact.name || "")
+                .toLowerCase();
 
-            ||
+            const phone =
+                (contact.phone || "");
 
-            contact.phone
-                .includes(search)
+            const contactCategory =
+                (contact.category || "General");
 
-            ||
+            const matchesSearch =
+                name.includes(search) ||
+                phone.includes(search) ||
+                contactCategory
+                    .toLowerCase()
+                    .includes(search);
 
-            contact.category
-                .toLowerCase()
-                .includes(search)
+            const matchesCategory =
+                selectedCategory === "All" ||
+                contactCategory === selectedCategory;
 
-        );
+            return matchesSearch && matchesCategory;
+
+        });
 
 
     if (filtered.length === 0) {
@@ -275,7 +288,6 @@ function displayContacts() {
         const div =
             document.createElement("div");
 
-
         div.className =
             "contact";
 
@@ -291,7 +303,7 @@ function displayContacts() {
                 <small>
                     ${escapeHTML(contact.phone)}
                     •
-                    ${escapeHTML(contact.category)}
+                    ${escapeHTML(contact.category || "General")}
                 </small>
 
             </div>
@@ -325,7 +337,6 @@ function displayContacts() {
     });
 
 }
-
 
 // ==========================================
 // DELETE CONTACT
