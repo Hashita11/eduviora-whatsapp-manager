@@ -281,7 +281,21 @@ function displayContacts() {
         return;
 
     }
+// Select All checkbox
+const selectAllDiv = document.createElement("div");
 
+selectAllDiv.innerHTML = `
+    <label style="display:block; margin:15px 0; font-weight:bold;">
+        <input
+            type="checkbox"
+            id="selectAllCampaigns"
+            onchange="toggleAllCampaignContacts(this)"
+        >
+        ☑️ Select All Contacts
+    </label>
+`;
+
+list.appendChild(selectAllDiv);
 
     filtered.forEach(contact => {
 
