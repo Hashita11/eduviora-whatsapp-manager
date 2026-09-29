@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
     displayTemplates();
 
     displayCampaigns();
+    displayMessageHistory();
 
     updateDashboard();
 
@@ -1030,6 +1031,69 @@ updateDashboard();
         contact.name,
         message
     );
+}
+// display message history
+function displayMessageHistory() {
+
+    const list =
+        document.getElementById("messageHistory");
+
+    if (!list) return;
+
+    list.innerHTML = "";
+
+    if (preparedMessages.length === 0) {
+
+        list.innerHTML = `
+            <div class="campaign">
+                <p>📭 No prepared messages yet.</p>
+            </div>
+        `;
+
+        return;
+    }
+
+    preparedMessages
+        .slice()
+        .reverse()
+        .forEach(item => {
+
+            const div =
+                document.createElement("div");
+
+            div.className = "campaign";
+
+            div.innerHTML = `
+
+                <h3>
+                    👤 ${escapeHTML(item.contactName)}
+                </h3>
+
+                <p>
+                    📱 ${escapeHTML(item.phone)}
+                </p>
+
+                <p>
+                    📝 Template:
+                    <strong>
+                        ${escapeHTML(item.template)}
+                    </strong>
+                </p>
+
+                <p>
+                    🕒 ${escapeHTML(item.date)}
+                </p>
+
+                <div class="template-message">
+                    ${escapeHTML(item.message)}
+                </div>
+
+            `;
+
+            list.appendChild(div);
+
+        });
+
 }
 // ==========================================
 // PREPARE MESSAGE
