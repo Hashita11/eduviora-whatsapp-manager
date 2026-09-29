@@ -1025,7 +1025,18 @@ return (
     });
 
 }
+                        
+function toggleAllCampaignContacts(selectAllCheckbox) {
 
+    const checkboxes =
+        document.querySelectorAll(".campaign-contact-checkbox");
+
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAllCheckbox.checked;
+    });
+
+}
+    
 function prepareTemplateMessage(contactId) {
 
     const contact = contacts.find(c => c.id == contactId);
@@ -1129,7 +1140,12 @@ function displayMessageHistory() {
 
             div.innerHTML = `
 
-                <h3>
+        <input
+    type="checkbox"
+    class="campaign-contact-checkbox"
+    value="${contact.id}"
+>
+<h3>
                     👤 ${escapeHTML(item.contactName)}
                 </h3>
 
