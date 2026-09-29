@@ -913,27 +913,55 @@ function deleteTemplate(id) {
 // ==========================================
 function displayCampaigns() {
 
-    const list = document.getElementById("campaignList");
+    const list =
+        document.getElementById("campaignList");
 
     if (!list) return;
 
     list.innerHTML = "";
 
-    if (contacts.length === 0) {
+    const categoryElement =
+        document.getElementById("campaignCategory");
+
+    const selectedCategory =
+        categoryElement
+        ? categoryElement.value
+        : "All";
+
+
+    const filteredContacts =
+        contacts.filter(contact => {
+
+            const contactCategory =
+                contact.category || "General";
+
+            return (
+                selectedCategory === "All" ||
+                contactCategory === selectedCategory
+            );
+
+        });
+
+
+    if (filteredContacts.length === 0) {
+
         list.innerHTML = `
             <div class="campaign">
-                <p>📭 No contacts available.</p>
-                <p>Please add or import contacts first.</p>
+                <p>📭 No contacts found in this category.</p>
             </div>
         `;
+
         return;
+
     }
 
-    contacts.forEach(contact => {
+
+    filteredContacts.forEach(contact => {
 
         let options = `
             <option value="">Select Template</option>
         `;
+
 
         templates.forEach(template => {
 
@@ -945,15 +973,22 @@ function displayCampaigns() {
 
         });
 
-        const div = document.createElement("div");
+
+        const div =
+            document.createElement("div");
 
         div.className = "campaign";
 
+
         div.innerHTML = `
 
-            <h3>👤 ${escapeHTML(contact.name)}</h3>
+            <h3>
+                👤 ${escapeHTML(contact.name)}
+            </h3>
 
-            <p>📱 ${escapeHTML(contact.phone)}</p>
+            <p>
+                📱 ${escapeHTML(contact.phone)}
+            </p>
 
             <select id="template-${contact.id}">
                 ${options}
@@ -961,11 +996,14 @@ function displayCampaigns() {
 
             <br><br>
 
-            <button onclick="prepareTemplateMessage(${contact.id})">
+            <button
+                onclick="prepareTemplateMessage(${contact.id})"
+            >
                 📲 Prepare WhatsApp Message
             </button>
 
         `;
+
 
         list.appendChild(div);
 
