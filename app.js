@@ -997,9 +997,18 @@ return (
 
         div.innerHTML = `
 
-            <h3>
-                👤 ${escapeHTML(contact.name)}
-            </h3>
+    <label style="display:block; margin-bottom:15px; font-weight:bold;">
+        <input
+            type="checkbox"
+            class="campaign-contact-checkbox"
+            value="${contact.id}"
+        >
+        ☑️ Select Contact
+    </label>
+
+    <h3>
+        👤 ${escapeHTML(contact.name)}
+    </h3>
 
             <p>
                 📱 ${escapeHTML(contact.phone)}
@@ -1023,7 +1032,18 @@ return (
         list.appendChild(div);
 
     });
+const prepareSelectedBtn =
+    document.createElement("button");
 
+prepareSelectedBtn.type = "button";
+
+prepareSelectedBtn.textContent =
+    "📲 Prepare Selected Messages";
+
+prepareSelectedBtn.onclick =
+    prepareSelectedCampaignMessages;
+
+list.appendChild(prepareSelectedBtn);
 }
                         
 function toggleAllCampaignContacts(selectAllCheckbox) {
@@ -1035,6 +1055,98 @@ function toggleAllCampaignContacts(selectAllCheckbox) {
         checkbox.checked = selectAllCheckbox.checked;
     });
 
+}
+    function prepareSelectedCampaignMessages() {
+
+    const selected =
+        document.querySelectorAll(
+            ".campaign-contact-checkbox:checked"
+        );
+
+    if (selected.length === 0) {
+        alert("Please select at least one contact.");
+        return;
+    }
+
+    let preparedCount = 0;
+
+    selected.forEach(checkbox => {
+
+        const contactId = checkbox.value;
+
+        const contact =
+            contacts.find(c => c.id == contactId);
+
+        if (!contact) return;
+
+        const select =
+            document.getElementById(
+                "template-" + contactId
+            );
+
+        if (!select || !select.value) {
+            return;
+        }
+
+        const template =
+            templates.find(
+                t => t.id == select.value
+            );
+
+        if (!template) return;
+
+        let message = template.message;
+
+        message = message.replace(
+            /{{name}}/g,
+            contact.name || ""
+        );
+
+        message = message.replace(
+            /{{phone}}/g,
+            contact.phone || ""
+        );
+
+        message = message.replace(
+            /{{category}}/g,
+            contact.category || "General"
+        );
+
+        preparedMessages.push({
+
+            id: Date.now() + preparedCount,
+
+            contactName: contact.name,
+
+            phone: contact.phone,
+
+            template: template.title,
+
+            message: message,
+
+            date: new Date().toLocaleString()
+
+        });
+
+        preparedCount++;
+
+    });
+
+    localStorage.setItem(
+        "eduviora_messages",
+        JSON.stringify(preparedMessages)
+    );
+
+    updateDashboard();
+
+    if (typeof displayMessageHistory === "function") {
+        displayMessageHistory();
+    }
+
+    alert(
+        preparedCount +
+        " message(s) prepared successfully."
+    );
 }
     
 function prepareTemplateMessage(contactId) {
