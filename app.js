@@ -1032,18 +1032,7 @@ return (
         list.appendChild(div);
 
     });
-const prepareSelectedBtn =
-    document.createElement("button");
 
-prepareSelectedBtn.type = "button";
-
-prepareSelectedBtn.textContent =
-    "📲 Prepare Selected Messages";
-
-prepareSelectedBtn.onclick =
-    prepareSelectedCampaignMessages;
-
-list.appendChild(prepareSelectedBtn);
 }
                         
 function toggleAllCampaignContacts(selectAllCheckbox) {
