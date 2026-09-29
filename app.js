@@ -904,7 +904,7 @@ function deleteTemplate(id) {
     displayTemplates();
 
     updateDashboard();
-
+mi
 }
 
 
@@ -933,14 +933,15 @@ function displayCampaigns() {
         contacts.filter(contact => {
 
             const contactCategory =
-                contact.category || "General";
+    (contact.category || "General").trim().toLowerCase();
 
-            return (
-                selectedCategory === "All" ||
-                contactCategory === selectedCategory
-            );
+const selected =
+    selectedCategory.trim().toLowerCase();
 
-        });
+return (
+    selected === "all" ||
+    contactCategory === selected
+);
 
 
     if (filteredContacts.length === 0) {
