@@ -933,7 +933,23 @@ function displayCampaigns() {
     if (!list) return;
 
     list.innerHTML = "";
+    
+const selectAllBox = document.createElement("label");
 
+selectAllBox.style.display = "block";
+selectAllBox.style.margin = "15px 0";
+selectAllBox.style.fontWeight = "bold";
+
+selectAllBox.innerHTML = `
+    <input
+        type="checkbox"
+        id="selectAllCampaigns"
+    >
+    ☑️ Select All
+`;
+
+list.appendChild(selectAllBox);
+    
     const categoryElement =
         document.getElementById("campaignCategory");
 
@@ -1118,21 +1134,6 @@ function displayMessageHistory() {
 
     list.innerHTML = "";
     
-const selectAllBox = document.createElement("label");
-
-selectAllBox.style.display = "block";
-selectAllBox.style.margin = "15px 0";
-selectAllBox.style.fontWeight = "bold";
-
-selectAllBox.innerHTML = `
-    <input
-        type="checkbox"
-        id="selectAllCampaigns"
-    >
-    ☑️ Select All
-`;
-
-list.appendChild(selectAllBox);
     
     if (preparedMessages.length === 0) {
 
