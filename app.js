@@ -933,22 +933,7 @@ function displayCampaigns() {
     if (!list) return;
 
     list.innerHTML = "";
-    
-const selectAllBox = document.createElement("label");
 
-selectAllBox.style.display = "block";
-selectAllBox.style.margin = "15px 0";
-selectAllBox.style.fontWeight = "bold";
-
-selectAllBox.innerHTML = `
-    <input
-        type="checkbox"
-        id="selectAllCampaigns"
-    >
-    ☑️ Select All
-`;
-
-list.appendChild(selectAllBox);
     
     const categoryElement =
         document.getElementById("campaignCategory");
@@ -986,7 +971,21 @@ return (
 
     }
 
+const selectAllBox = document.createElement("label");
 
+selectAllBox.style.display = "block";
+selectAllBox.style.margin = "15px 0";
+selectAllBox.style.fontWeight = "bold";
+
+selectAllBox.innerHTML = `
+    <input
+        type="checkbox"
+        id="selectAllCampaigns"
+    >
+    ☑️ Select All
+`;
+
+list.appendChild(selectAllBox);
     filteredContacts.forEach(contact => {
 
         let options = `
