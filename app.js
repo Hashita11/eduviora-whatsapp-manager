@@ -997,15 +997,6 @@ return (
 
         div.innerHTML = `
 
-    <label style="display:block; margin-bottom:15px; font-weight:bold;">
-        <input
-            type="checkbox"
-            class="campaign-contact-checkbox"
-            value="${contact.id}"
-        >
-        ☑️ Select Contact
-    </label>
-
     <h3>
         👤 ${escapeHTML(contact.name)}
     </h3>
