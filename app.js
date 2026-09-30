@@ -918,7 +918,7 @@ function deleteTemplate(id) {
     displayTemplates();
 
     updateDashboard();
-mi
+
 }
 
 
@@ -957,7 +957,7 @@ return (
     contactCategory === selected
 );
 
-
+});
     if (filteredContacts.length === 0) {
 
         list.innerHTML = `
