@@ -1241,11 +1241,6 @@ function displayMessageHistory() {
 
             div.innerHTML = `
 
-        <input
-    type="checkbox"
-    class="campaign-contact-checkbox"
-    value="${contact.id}"
->
 <h3>
                     👤 ${escapeHTML(item.contactName)}
                 </h3>
